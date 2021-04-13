@@ -11,6 +11,9 @@
 
 library(determinePC)
 
+# add
+Sys.setlocale("LC_ALL", "English")
+
 # Set up output and storage folders
 options(andromedaTempFolder = str_c(getwd(),"/tmp"))
 
@@ -19,18 +22,19 @@ dir.create(outputFolder)
 
 # Details for connecting to the server:
 connectionDetails <- DatabaseConnector::createConnectionDetails(
-  dbms = ,
-  server = ,
-  user = ,
-  password = ,
-  port = )
+  dbms = "postgresql",
+  server = "",
+  user = "",
+  password = "",
+  port = ""
+)
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
 
 
-cohortDatabaseSchema <-
-cdmDatabaseSchema <-
+cohortDatabaseSchema <- ""
+cdmDatabaseSchema <- ""
 
 
 # Table names. regimenIngredientsTable should match the table created by OncologyRegimenFinder
@@ -49,9 +53,9 @@ determinePC::execute(
   cohortTable = cohortTable,
   oracleTempSchema = NULL,
   outputFolder = outputFolder,
-  createCohorts = F,
-  createCohortTable = F,
-  runCharacterization = F,
+  createCohorts = T,
+  createCohortTable = T,
+  runCharacterization = T,
   getTreatmentInfo = T,
   minCount = minCount
 )

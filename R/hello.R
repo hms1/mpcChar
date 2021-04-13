@@ -155,8 +155,8 @@ execute <- function(connectionDetails,
     generate_survival_crpc(formatted_regimens, count_mask = minCount, tryPlot=T) %>%
       readr::write_csv(file.path(outputFolder, "survival_mcrpc.csv"))
 
-    generate_survival_bcr(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask = minCount, tryPlot=F) %>%
-      readr::write_csv(file.path(outputFolder, "survival_bcr.csv"))
+    # generate_survival_bcr(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask = minCount, tryPlot=F) %>%
+    # readr::write_csv(file.path(outputFolder, "survival_bcr.csv"))
 
     generate_number_psa(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask = minCount) %>%
       readr::write_csv(file.path(outputFolder, "psa_followup.csv"))

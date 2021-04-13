@@ -1,0 +1,100 @@
+{
+  "cdmVersionRange": [">=5.0.0"],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionOccurrence": {
+          "ConditionTypeExclude": false,
+          "ConditionSourceConcept": 1,
+          "Age": {
+            "Value": 17,
+            "Op": "gt"
+          },
+          "Gender": [
+            {
+              "CONCEPT_ID": 8507,
+              "CONCEPT_NAME": "MALE",
+              "STANDARD_CONCEPT_CAPTION": "Unknown",
+              "INVALID_REASON_CAPTION": "Unknown",
+              "CONCEPT_CODE": "M",
+              "DOMAIN_ID": "Gender",
+              "VOCABULARY_ID": "Gender"
+            }
+          ]
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": [0],
+      "PostDays": [0]
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": ["First"]
+    }
+  },
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "BCR",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 4245252,
+              "CONCEPT_NAME": "Raised prostate specific antigen",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "396152005",
+              "DOMAIN_ID": "Condition",
+              "VOCABULARY_ID": "SNOMED",
+              "CONCEPT_CLASS_ID": "Clinical Finding"
+            },
+            "isExcluded": false,
+            "includeDescendants": false,
+            "includeMapped": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "name": "Source BCR",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 37201123,
+              "CONCEPT_NAME": "Rising PSA following treatment for malignant neoplasm of prostate",
+              "STANDARD_CONCEPT": "N",
+              "STANDARD_CONCEPT_CAPTION": "Non-Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "R97.21",
+              "DOMAIN_ID": "Condition",
+              "VOCABULARY_ID": "ICD10CM",
+              "CONCEPT_CLASS_ID": "5-char billing code"
+            },
+            "isExcluded": false,
+            "includeDescendants": false,
+            "includeMapped": false
+          }
+        ]
+      }
+    }
+  ],
+  "QualifiedLimit": {
+    "Type": ["First"]
+  },
+  "ExpressionLimit": {
+    "Type": ["First"]
+  },
+  "InclusionRules": [],
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": ["ERA"],
+    "EraPad": [0]
+  },
+  "CensorWindow": {}
+}

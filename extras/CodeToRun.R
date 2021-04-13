@@ -17,30 +17,20 @@ options(andromedaTempFolder = str_c(getwd(),"/tmp"))
 outputFolder <- file.path(getwd(),"results")
 dir.create(outputFolder)
 
-# Specify where the temporary files (used by the ff package) will be created:
-options(fftempdir = "/home/cbj/temp")
-
-dbms <- "sql server"
-user <- 'cbj'
-pw <- 'qwer1234!@'
-server <- '128.1.99.58'
-port <- 1433
 # Details for connecting to the server:
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-                                                                server = server,
-                                                                user = user,
-                                                                password = pw,
-                                                                port = port)
+connectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = ,
+  server = ,
+  user = ,
+  password = ,
+  port = )
 
 # For Oracle: define a schema that can be used to emulate temp tables:
-cdmDatabaseSchema <- 'CDMPv532.dbo'
-# Add a sharebale name for the database containing the OMOP CDM data
-cdmDatabaseName <- 'AUSOM'
-# Add a database with read/write access as this is where the cohorts will be generated
-cohortDatabaseSchema <- 'cohortDB.dbo'
-databaseId <- "AUSOM"
-databaseName <- "AUSOM"
-databaseDescription <- "AUSOM"
+oracleTempSchema <- NULL
+
+
+cohortDatabaseSchema <-
+cdmDatabaseSchema <-
 
 
 # Table names. regimenIngredientsTable should match the table created by OncologyRegimenFinder
@@ -59,9 +49,9 @@ determinePC::execute(
   cohortTable = cohortTable,
   oracleTempSchema = NULL,
   outputFolder = outputFolder,
-  createCohorts = T,
-  createCohortTable = T,
-  runCharacterization = T,
+  createCohorts = F,
+  createCohortTable = F,
+  runCharacterization = F,
   getTreatmentInfo = T,
   minCount = minCount
 )

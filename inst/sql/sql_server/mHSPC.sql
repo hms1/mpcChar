@@ -247,7 +247,7 @@ FROM
   JOIN #Codesets codesets on ((co.condition_concept_id = codesets.concept_id and codesets.codeset_id = 0))
 ) C
 
-WHERE C.condition_start_date >= DATEFROMPARTS(2010, 01, 01)
+WHERE C.condition_start_date >= DATEFROMPARTS(2000, 01, 01)
 -- End Condition Occurrence Criteria
 
 ) A on A.person_id = P.person_id  AND A.START_DATE >= P.OP_START_DATE AND A.START_DATE <= P.OP_END_DATE AND A.START_DATE >= P.OP_START_DATE AND A.START_DATE <= DATEADD(day,0,P.START_DATE)

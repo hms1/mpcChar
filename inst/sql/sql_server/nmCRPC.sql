@@ -118,13 +118,13 @@ UNION  select c.concept_id
 ;
 
 CREATE TABLE #Measurement_criteria (
-person_id bigint NOT NULL,
-event_id bigint NOT NULL,
-start_date date NOT NULL,
-end_date date NOT NULL,
-target_concept_id bigint NOT NULL,
-visit_occurrence_id bigint NOT NULL,
-sort_date date NOT NULL
+  person_id bigint NOT NULL,
+  event_id bigint NOT NULL,
+  start_date date NOT NULL,
+  end_date date,
+  target_concept_id bigint NOT NULL,
+  visit_occurrence_id bigint,
+  sort_date date NOT NULL
 )
 ;
 

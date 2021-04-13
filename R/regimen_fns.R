@@ -211,6 +211,56 @@ generate_regimens_by_line <- function(formatted_regimens, count_mask){
 
 }
 
+generate_survival_crpc <- function(formatted_regimens, count_mask){
+
+  data <- formatted_regimens %>%
+    ungroup %>%
+    mutate(age = cut(year(cohort_start_date)-year_of_birth, c(0,60,70,80,Inf), right = FALSE)) %>%
+    tbl_df %>%
+    mutate(
+      outcome = observation_period_end_date != cohort_end_date,
+      days_to_end = as.integer(cohort_end_date - cohort_start_date)
+    ) %>%
+    select(popn, subject_id, age, outcome, days_to_end) %>%
+    distinct
+
+  surv_obj <- survfit(Surv(days_to_end, outcome) ~ popn, data= data %>% filter(popn %in% c("mHSPC","nmCRPC")))
+
+  plot <- autoplot(surv_obj, censor = FALSE) +
+    coord_cartesian(ylim = c(0,1), x = c(0,365.25*5)) +
+    facet_wrap(vars(strata)) + theme_bw() +
+    theme(legend.position = "none") +
+    labs(title = str_c("Time to mCRPC")) +
+    scale_x_continuous(breaks = seq(0,365.25*5,365.25), labels =function(x)x/365.25, name = "Years since diagnosis")
+
+  ggsave(file.path(outputFolder, str_c("mCRPCsurv.jpg")), plot, width = 6, height = 3, units = "in")
+
+  totals <- summary(surv_obj)$table %>% as.data.frame %>% mutate(popn = rownames(.), age_group = "all")
+
+
+  by_age <- map_df(c("mHSPC","nmCRPC"), function(i){
+
+    surv_obj <- survfit(Surv(days_to_end, outcome) ~  age, data=data %>% filter(popn == i))
+
+    plot <- autoplot(surv_obj, censor = FALSE) +
+      coord_cartesian(ylim = c(0,1), x = c(0,365.25*5)) +
+      facet_wrap(vars(strata)) + theme_bw() +
+      theme(legend.position = "none") +
+      labs(title = str_c("Time to mCRPC from ","i")) +
+      scale_x_continuous(breaks = seq(0,365.25*5,365.25), labels =function(x)x/365.25, name = "Years since diagnosis")
+
+    ggsave(file.path(outputFolder, str_c("mCRPCsurv_",i,".jpg")), plot, width = 6, height = 4, units = "in")
+
+    summary(surv_obj)$table %>% as.data.frame %>% mutate(popn =i, age_group = row.names(.))
+
+  })
+
+  bind_rows(totals, by_age) %>%
+    select(popn, age_group, records, events, median) %>%
+    mutate_at(vars(records, events), ~case_when(.x <= count_mask ~ as.integer(count_mask), TRUE ~ as.integer(.x)))
+
+}
+
 generate_number_psa <- function(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask){
 
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "number_psa.sql",
@@ -260,8 +310,7 @@ generate_ranges_psa <- function(connection, cohortDatabaseSchema, cdmDatabaseSch
 
 }
 
-generate_survival_bcr <- function(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask, tryPlot = F){
-
+generate_survival_bcr <- function(connection, cohortDatabaseSchema, cdmDatabaseSchema, regimenIngredientsTable, cohortTable, count_mask){
 
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "bcr_survival.sql",
                                            packageName = "determinePC",
@@ -311,7 +360,6 @@ generate_survival_bcr <- function(connection, cohortDatabaseSchema, cdmDatabaseS
 
     surv_obj <- survfit(Surv(days_to_end, outcome) ~  age, data=data)
 
-    if(tryPlot){
     plot <- autoplot(surv_obj, xlab = "Years since BCR", censor = FALSE) +
       coord_cartesian(ylim = c(0,1), x = c(0,5*365.25)) +
       scale_x_continuous(labels = function(x) as.integer(x/365.25), breaks = seq(0,5*365.25,365.25)) +
@@ -321,7 +369,6 @@ generate_survival_bcr <- function(connection, cohortDatabaseSchema, cdmDatabaseS
       labs(title = str_c("Time to ",toupper(endpoint)," by age group"))
 
     ggsave(file.path(outputFolder, str_c("BCRsurv_",endpoint,".jpg")), plot, width = 6, height = 4, units = "in")
-    }
 
     by_age <- summary(surv_obj)$table %>% as.data.frame %>% mutate(age_group = row.names(.), popn = "BCR")
 
@@ -330,59 +377,5 @@ generate_survival_bcr <- function(connection, cohortDatabaseSchema, cdmDatabaseS
       mutate_at(vars(records, events), ~case_when(.x <= count_mask ~ as.integer(count_mask), TRUE ~ as.integer(.x)))
 
   }) %>% bind_rows(.id = "endpoint")
-
-}
-
-generate_survival_crpc <- function(formatted_regimens, count_mask, tryPlot=T){
-
-  data <- formatted_regimens %>%
-    ungroup %>%
-    mutate(age = cut(year(cohort_start_date)-year_of_birth, c(0,60,70,80,Inf), right = FALSE)) %>%
-    tbl_df %>%
-    mutate(
-      outcome = observation_period_end_date != cohort_end_date,
-      days_to_end = as.integer(cohort_end_date - cohort_start_date)
-    ) %>%
-    select(popn, subject_id, age, outcome, days_to_end) %>%
-    distinct
-
-  surv_obj <- survfit(Surv(days_to_end, outcome) ~ popn, data= data %>% filter(popn %in% c("mHSPC","nmCRPC")))
-
-  if(tryPlot){
-    plot <- autoplot(surv_obj, censor = FALSE) +
-      coord_cartesian(ylim = c(0,1), x = c(0,365.25*5)) +
-      facet_wrap(vars(strata)) + theme_bw() +
-      theme(legend.position = "none") +
-      labs(title = str_c("Time to mCRPC")) +
-      scale_x_continuous(breaks = seq(0,365.25*5,365.25), labels =function(x)x/365.25, name = "Years since diagnosis")
-
-    ggsave(file.path(outputFolder, str_c("mCRPCsurv.jpg")), plot, width = 6, height = 3, units = "in")
-  }
-
-  totals <- summary(surv_obj)$table %>% as.data.frame %>% mutate(popn = rownames(.), age_group = "all")
-
-
-  by_age <- map_df(c("mHSPC","nmCRPC"), function(i){
-
-    surv_obj <- survfit(Surv(days_to_end, outcome) ~  age, data=data %>% filter(popn == i))
-
-    if(tryPlot){
-      plot <- autoplot(surv_obj, censor = FALSE) +
-        coord_cartesian(ylim = c(0,1), x = c(0,365.25*5)) +
-        facet_wrap(vars(strata)) + theme_bw() +
-        theme(legend.position = "none") +
-        labs(title = str_c("Time to mCRPC from ","i")) +
-        scale_x_continuous(breaks = seq(0,365.25*5,365.25), labels =function(x)x/365.25, name = "Years since diagnosis")
-
-      ggsave(file.path(outputFolder, str_c("mCRPCsurv_",i,".jpg")), plot, width = 6, height = 4, units = "in")
-    }
-
-    summary(surv_obj)$table %>% as.data.frame %>% mutate(popn =i, age_group = row.names(.))
-
-  })
-
-  bind_rows(totals, by_age) %>%
-    select(popn, age_group, records, events, median) %>%
-    mutate_at(vars(records, events), ~case_when(.x <= count_mask ~ as.integer(count_mask), TRUE ~ as.integer(.x)))
 
 }

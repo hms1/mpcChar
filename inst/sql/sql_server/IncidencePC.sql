@@ -3,7 +3,16 @@ IF OBJECT_ID('@cohort_database_schema.yearly_counts_bayer', 'U') IS NOT NULL
 
   CREATE TABLE @cohort_database_schema.yearly_counts_bayer (obs_year int);
 
-  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2010),(2011),(2012),(2013),(2014),(2015),(2016),(2017),(2018),(2019);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2010);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2011);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2012);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2013);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2014);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2015);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2016);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2017);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2018);
+  INSERT INTO  @cohort_database_schema.yearly_counts_bayer values (2019);
 
   WITH CTE AS (
   SELECT obs_year, 'incident_cases' as category, cohort_definition_id, count_cases

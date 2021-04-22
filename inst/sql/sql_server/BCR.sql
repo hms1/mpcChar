@@ -113,7 +113,7 @@ FROM
                row_number() OVER (PARTITION BY m.person_id ORDER BY m.measurement_date ASC) ordinal
         FROM @cdm_database_schema.MEASUREMENT m
         JOIN #Codesets codesets on (m.measurement_concept_id = codesets.concept_id and codesets.codeset_id = 12)
-        WHERE unit_concept_id IN (8842,8817)
+        WHERE unit_concept_id IN (8842,8817) OR unit_source_value IN ('ng/mL','ng/ml')
       ) C
       JOIN (
         select m.person_id, m.measurement_id, m.measurement_date, m.measurement_concept_id, m.visit_occurrence_id,
@@ -124,7 +124,7 @@ FROM
                row_number() OVER (PARTITION BY m.person_id ORDER BY m.measurement_date ASC) ordinal
         FROM @cdm_database_schema.MEASUREMENT m
         JOIN #Codesets codesets on (m.measurement_concept_id = codesets.concept_id and codesets.codeset_id = 12)
-        WHERE unit_concept_id IN (8842,8817)
+        WHERE unit_concept_id IN (8842,8817) OR unit_source_value IN ('ng/mL','ng/ml')
       ) C2 on (C.person_id = C2.person_id)
 WHERE (C.converted_value - C2.converted_value) > 2.0000
 AND C.measurement_date > C2.measurement_date;
